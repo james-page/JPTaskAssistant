@@ -1,0 +1,31 @@
+﻿@page "/calendar"
+@rendermode InteractiveServer
+
+<PageTitle>Calendar</PageTitle>
+
+<h1>Calendar</h1>
+
+<div class="calendar">
+    <div class="month">January 2024</div>
+    <div class="days">
+        <div class="day">Sun</div>
+        <div class="day">Mon</div>
+        <div class="day">Tue</div>
+        <div class="day">Wed</div>
+        <div class="day">Thu</div>
+        <div class="day">Fri</div>
+        <div class="day">Sat</div>
+         @*Days will be dynamically generated using JavaScript*@ 
+    </div>
+    <div class="dates">
+         @*Dates will be dynamically generated using JavaScript*@ 
+    </div>
+</div> 
+
+<div id="calendar"></div>
+
+
+@code {
+
+}
+
