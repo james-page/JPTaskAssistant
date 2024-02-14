@@ -22,10 +22,26 @@
     </div>
 </div> 
 
-<div id="calendar"></div>
+<ul>
+    @foreach(var task in tasks)
+    {
+        <li>@task.Title</li>
+    }
+</ul>
 
+<input placeholder="Add a task" @bind="newTask"/>
+<button @onclick="AddTask">Add Task</button>
 
 @code {
+    private string? newTask;
+    private List<Models.JPTask> tasks = new();
 
+    private void AddTask()
+    {
+        if (!string.IsNullOrWhiteSpace(newTask))
+        {
+            tasks.Add(new Models.JPTask { Title = newTask });
+        }
+    }
 }
 
