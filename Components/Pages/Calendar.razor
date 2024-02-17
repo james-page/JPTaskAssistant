@@ -41,7 +41,11 @@
         if (!string.IsNullOrWhiteSpace(newTask))
         {
             tasks.Add(new Models.JPTask { Title = newTask });
+            newTask = string.Empty;
+            
         }
     }
+
+    //TODO: sever connection?
 }
 
