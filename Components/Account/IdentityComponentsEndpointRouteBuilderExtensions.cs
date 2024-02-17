@@ -1,6 +1,6 @@
 using JPTaskAssistant.Components.Account.Pages;
 using JPTaskAssistant.Components.Account.Pages.Manage;
-using JPTaskAssistant.Data;
+using JPTaskAssistant.Data.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;

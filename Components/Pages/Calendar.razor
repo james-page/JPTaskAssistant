@@ -34,13 +34,13 @@
 
 @code {
     private string? newTask;
-    private List<Models.JPTask> tasks = new();
+    private List<Data.Models.JPDailyListTask> tasks = new();
 
     private void AddTask()
     {
         if (!string.IsNullOrWhiteSpace(newTask))
         {
-            tasks.Add(new Models.JPTask { Title = newTask });
+            tasks.Add(new Data.Models.JPDailyListTask { Title = newTask });
             newTask = string.Empty;
             
         }

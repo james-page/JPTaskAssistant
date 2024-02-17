@@ -1,4 +1,4 @@
-using JPTaskAssistant.Data;
+using JPTaskAssistant.Data.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace JPTaskAssistant.Components.Account

@@ -1,14 +1,13 @@
 using JPTaskAssistant.Components;
 using JPTaskAssistant.Components.Account;
 using JPTaskAssistant.Data;
+using JPTaskAssistant.Data.Models;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<JPTaskAssistantContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("JPTaskAssistantContext") ?? throw new InvalidOperationException("Connection string 'JPTaskAssistantContext' not found.")));
 
 
 // Add services to the container.
