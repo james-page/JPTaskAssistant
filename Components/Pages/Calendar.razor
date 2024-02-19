@@ -1,5 +1,6 @@
 ﻿@page "/calendar"
 @rendermode InteractiveServer
+@inject IDbContextFactory<JPTaskAssistantContext> ContextFactory
 
 <PageTitle>Calendar</PageTitle>
 
@@ -22,30 +23,50 @@
     </div>
 </div> 
 
-<ul>
-    @foreach(var task in tasks)
-    {
-        <li>@task.Title</li>
-    }
-</ul>
+@if(@jptasks is null){
+    <div>Loading ....</div>
+}
+else{
+    <ul>
+        @foreach (var jptask in jptasks)
+        {
+            <li>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="@jptask.IsCompleted" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">
+                        @jptask.Title
+                    </label>
+                </div>
+            </li>
+        }
+    </ul>
+}
+
 
 <input placeholder="Add a task" @bind="newTask"/>
 <button @onclick="AddTask">Add Task</button>
 
 @code {
     private string? newTask;
-    private List<Data.Models.JPDailyListTask> tasks = new();
+    private List<Data.Models.JPDailyListTask> jptasks = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = ContextFactory.CreateDbContext();
+
+        jptasks = await context.JPDailyListTask.ToListAsync();
+    }
 
     private void AddTask()
     {
         if (!string.IsNullOrWhiteSpace(newTask))
         {
-            tasks.Add(new Data.Models.JPDailyListTask { Title = newTask });
+            jptasks.Add(new Data.Models.JPDailyListTask { Title = newTask });
             newTask = string.Empty;
-            
+            //Add to server        
         }
     }
 
-    //TODO: sever connection?
+    
 }
 

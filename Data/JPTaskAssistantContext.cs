@@ -14,6 +14,43 @@ namespace JPTaskAssistant.Data
         {
         }
 
-        public DbSet<JPTaskAssistant.Data.Models.JPDailyListTask> JPDailyListTask { get; set; } = default!;
+        public DbSet<JPDailyListTask> JPDailyListTask { get; set; } = default!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            string james = "James";
+
+            modelBuilder.Entity<JPDailyListTask>().HasData(
+                new JPDailyListTask()
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Create New UI",
+                    EnteredBy = james,
+                    DateEntered = DateTime.Now
+                },
+                new JPDailyListTask()
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Test Checking Task as Done",
+                    EnteredBy = james,
+                    DateEntered = DateTime.Now
+                },
+                new JPDailyListTask()
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Add and Remove Tasks",
+                    EnteredBy = james,
+                    DateEntered = DateTime.Now
+                },
+                new JPDailyListTask()
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Come Up With Celebration Idea",
+                    EnteredBy = james,
+                    DateEntered = DateTime.Now
+                });
+        }
     }
 }

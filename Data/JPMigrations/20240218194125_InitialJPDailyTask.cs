@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace JPTaskAssistant.Migrations.JPTaskAssistant
+namespace JPTaskAssistant.Data.JPMigrations
 {
     /// <inheritdoc />
-    public partial class InitialJPTaskAssistant : Migration
+    public partial class InitialJPDailyTask : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,6 +19,7 @@ namespace JPTaskAssistant.Migrations.JPTaskAssistant
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsCompleted = table.Column<bool>(type: "bit", nullable: true),
                     DateEntered = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EnteredBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },

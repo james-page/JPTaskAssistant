@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<JPTaskAssistantContext>(options =>
+builder.Services.AddDbContextFactory<JPTaskAssistantContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("JPTaskAssistantContext") ?? throw new InvalidOperationException("Connection string 'JPTaskAssistantContext' not found.")));
 
 
@@ -42,9 +42,22 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 
 var app = builder.Build();
 
+
+async Task EnsureDatabaseIsMigrated(IServiceProvider services)
+{
+    using var scope = services.CreateScope();
+    using var ctx = scope.ServiceProvider.GetService<JPTaskAssistantContext>();
+    if(ctx != null)
+        await ctx.Database.MigrateAsync();  
+
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    // Don't do in Production, just useful for development
+    await EnsureDatabaseIsMigrated(app.Services);
+
     app.UseMigrationsEndPoint();
 }
 else

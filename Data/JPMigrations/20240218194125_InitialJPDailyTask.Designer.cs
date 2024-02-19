@@ -4,16 +4,19 @@ using JPTaskAssistant.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace JPTaskAssistant.Migrations.JPTaskAssistant
+namespace JPTaskAssistant.Data.JPMigrations
 {
     [DbContext(typeof(JPTaskAssistantContext))]
-    partial class JPTaskAssistantContextModelSnapshot : ModelSnapshot
+    [Migration("20240218194125_InitialJPDailyTask")]
+    partial class InitialJPDailyTask
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,6 +40,9 @@ namespace JPTaskAssistant.Migrations.JPTaskAssistant
                     b.Property<string>("EnteredBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsCompleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Title")
                         .IsRequired()

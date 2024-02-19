@@ -22,6 +22,7 @@
   <ItemGroup>
     <Folder Include="Components\Calendar\" />
     <Folder Include="Components\Pages\Calendar\" />
+    <Folder Include="Data\JPMigrations\" />
   </ItemGroup>
 
 </Project>
