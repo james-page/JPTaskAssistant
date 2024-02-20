@@ -1,4 +1,4 @@
-﻿@page "/calendar"
+﻿@page "/calendar/{currentPage:int?}"
 @rendermode InteractiveServer
 @inject IDbContextFactory<JPTaskAssistantContext> ContextFactory
 
@@ -47,14 +47,30 @@ else{
 <button @onclick="AddTask">Add Task</button>
 
 @code {
+    [Parameter]
+    public int? CurrentPage { get; set; }
+
     private string? newTask;
     private List<Data.Models.JPDailyListTask> jptasks = new();
 
-    protected override async Task OnInitializedAsync()
+    private const int itemsPerPage = 3;
+
+    protected override async Task OnParametersSetAsync()
     {
+        if(CurrentPage is null)
+        {
+            CurrentPage = 1;
+        }
+
         using var context = ContextFactory.CreateDbContext();
 
-        jptasks = await context.JPDailyListTask.ToListAsync();
+        var itemsToSkip = (CurrentPage.Value - 1) * itemsPerPage;
+
+        jptasks = await context.JPDailyListTask
+            .OrderBy(jpt => jpt.DateEntered)
+            .Skip(itemsToSkip)
+            .Take(itemsPerPage)
+            .ToListAsync();
     }
 
     private void AddTask()

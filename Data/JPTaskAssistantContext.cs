@@ -50,6 +50,13 @@ namespace JPTaskAssistant.Data
                     Title = "Come Up With Celebration Idea",
                     EnteredBy = james,
                     DateEntered = DateTime.Now
+                },
+                new JPDailyListTask()
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Figure Out a Hosting Solution",
+                    EnteredBy = james,
+                    DateEntered = DateTime.Now
                 });
         }
     }
