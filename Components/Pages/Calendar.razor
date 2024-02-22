@@ -1,12 +1,13 @@
 ﻿@page "/calendar/{currentPage:int?}"
 @rendermode InteractiveServer
 @inject IDbContextFactory<JPTaskAssistantContext> ContextFactory
+@inject NavigationManager NavigationManager
 
 <PageTitle>Calendar</PageTitle>
 
 <h1>Calendar</h1>
 
-<div class="calendar">
+@* <div class="calendar">
     <div class="month">January 2024</div>
     <div class="days">
         <div class="day">Sun</div>
@@ -15,18 +16,36 @@
         <div class="day">Wed</div>
         <div class="day">Thu</div>
         <div class="day">Fri</div>
-        <div class="day">Sat</div>
-         @*Days will be dynamically generated using JavaScript*@ 
-    </div>
-    <div class="dates">
-         @*Dates will be dynamically generated using JavaScript*@ 
-    </div>
-</div> 
+        <div class="day">Sat</div>*@
+        @*Days will be dynamically generated using JavaScript*@
+    @*</div>
+    <div class="dates">*@
+        @*Dates will be dynamically generated using JavaScript*@
+    @*</div>
+</div> *@
 
-@if(@jptasks is null){
+
+
+@if (@jptasks is null)
+{
     <div>Loading ....</div>
 }
-else{
+else
+{
+    <ul class="pagination mt-3">
+        <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" href="/calendar/@(CurrentPage - 1)">&lt</a>
+        </li>
+        @for (int i = 1; i <= TotalPages; i++)
+        {
+            <li class="page-item @(CurrentPage == i ? "active" : "")">
+                <a class="page-link" href="/calendar/@i">@i</a>
+            </li>
+        }
+        <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
+            <a class="page-link" href="/calendar/@(CurrentPage + 1)">&gt</a>
+        </li>
+    </ul>
     <ul>
         @foreach (var jptask in jptasks)
         {
@@ -40,29 +59,70 @@ else{
             </li>
         }
     </ul>
+    <EditForm Model="@newJpDailyListTask">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+
+        <div class="mb-3">
+            <label for="title" class="form-label">Task Name</label>
+            <InputText id="title" class="form-control"
+                       @bind-Value="newJpDailyListTask.Title"/>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <InputText id="description" class="form-control"
+                       @bind-Value="newJpDailyListTask.Description" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add</button>
+    </EditForm>
+    <input placeholder="Add a task" @bind="newTask" />
+    <button @onclick="AddTask">Add Task</button> 
+    
 }
 
 
-<input placeholder="Add a task" @bind="newTask"/>
-<button @onclick="AddTask">Add Task</button>
 
 @code {
+    public JPDailyListTask? newJpDailyListTask { get; set; }
+
     [Parameter]
     public int? CurrentPage { get; set; }
 
     private string? newTask;
     private List<Data.Models.JPDailyListTask> jptasks = new();
 
+    private int TotalPages { get; set; }
+
     private const int itemsPerPage = 3;
+
+    protected override void OnInitialized()
+    {
+        newJpDailyListTask = new();
+        newJpDailyListTask.EnteredBy = "James";
+    }
 
     protected override async Task OnParametersSetAsync()
     {
-        if(CurrentPage is null)
+        if (CurrentPage is null or < 1)
         {
-            CurrentPage = 1;
+            //navigate to first page since 0 page doesn't exist
+            NavigationManager.NavigateTo("/calendar/1");
+            return;
         }
 
         using var context = ContextFactory.CreateDbContext();
+
+        var jpTaskCount = await context.JPDailyListTask.CountAsync();
+        TotalPages = jpTaskCount == 0 ? 1 : (int)Math.Ceiling((double)jpTaskCount / itemsPerPage);
+
+        if (CurrentPage > TotalPages)
+        {
+            NavigationManager.NavigateTo($"/calendar/{TotalPages}");
+            //TODO let user know the page asked for does not exist?
+            return;
+        }
 
         var itemsToSkip = (CurrentPage.Value - 1) * itemsPerPage;
 
@@ -79,10 +139,10 @@ else{
         {
             jptasks.Add(new Data.Models.JPDailyListTask { Title = newTask });
             newTask = string.Empty;
-            //Add to server        
+            //Add to server
         }
     }
 
-    
+
 }
 
