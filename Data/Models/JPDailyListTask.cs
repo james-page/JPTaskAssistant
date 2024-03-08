@@ -18,7 +18,7 @@ namespace JPTaskAssistant.Data.Models
 
         public string? Description { get; set; }
 
-        public bool? IsCompleted { get; set; } = false;
+        public bool IsCompleted { get; set; } = false;
 
     }
 }

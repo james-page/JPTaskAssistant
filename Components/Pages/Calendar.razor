@@ -64,15 +64,36 @@ else
         <ValidationSummary/>
 
         <div class="mb-3">
+            <label for="taskType" class="form-label">Choose Task Type</label>
+            <InputSelect id="taskType" class="form-select"
+                       @bind-Value="newJpDailyListTask.Type">
+                @foreach (var jptt in Enum.GetValues<JPTaskType>())
+                {
+                    <option value="@jptt">@jptt.ToDescription()</option>
+                }
+            </InputSelect>
+            @* <ValidationMessage For="()=>newJpDailyListTask.Title"/> *@
+        </div>
+
+        <div class="mb-3">
             <label for="title" class="form-label">Task Name</label>
             <InputText id="title" class="form-control"
                        @bind-Value="newJpDailyListTask.Title"/>
+            @* <ValidationMessage For="()=>newJpDailyListTask.Title"/> *@
         </div>
-
+        
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>
             <InputText id="description" class="form-control"
                        @bind-Value="newJpDailyListTask.Description" />
+            @* <ValidationMessage For="()=>newJpDailyListTask.Description" /> *@
+        </div>
+
+        <div class="mb-3">
+            <label for="isCompleted" class="form-label">Completed</label>
+            <InputCheckbox id="isCompleted" class="form-check-input"
+                       @bind-Value="newJpDailyListTask.IsCompleted" />
+            @* <ValidationMessage For="()=>newJpDailyListTask.IsCompleted" /> *@
         </div>
 
         <button type="submit" class="btn btn-primary">Add</button>
@@ -85,7 +106,8 @@ else
 
 
 @code {
-    public JPDailyListTask? newJpDailyListTask { get; set; }
+    private JPDailyListTask? newJpDailyListTask { get; set; }
+    private List<JPTaskType>? taskTypes { get; set; }
 
     [Parameter]
     public int? CurrentPage { get; set; }
