@@ -59,9 +59,23 @@ else
             </li>
         }
     </ul>
-    <EditForm Model="@newJpDailyListTask">
+    <EditForm Model="@newJpDailyListTask" OnValidSubmit="@HandleValidSubmit">
         <DataAnnotationsValidator/>
         <ValidationSummary/>
+
+        <div class="mb-3">
+            <label for="title" class="form-label">Task Name</label>
+            <InputText id="title" class="form-control"
+                       @bind-Value="newJpDailyListTask.Title" />
+            @* <ValidationMessage For="()=>newJpDailyListTask.Title"/> *@
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <InputText id="description" class="form-control"
+                       @bind-Value="newJpDailyListTask.Description" />
+            @* <ValidationMessage For="()=>newJpDailyListTask.Description" /> *@
+        </div>
 
         <div class="mb-3">
             <label for="taskType" class="form-label">Choose Task Type</label>
@@ -76,20 +90,6 @@ else
         </div>
 
         <div class="mb-3">
-            <label for="title" class="form-label">Task Name</label>
-            <InputText id="title" class="form-control"
-                       @bind-Value="newJpDailyListTask.Title"/>
-            @* <ValidationMessage For="()=>newJpDailyListTask.Title"/> *@
-        </div>
-        
-        <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <InputText id="description" class="form-control"
-                       @bind-Value="newJpDailyListTask.Description" />
-            @* <ValidationMessage For="()=>newJpDailyListTask.Description" /> *@
-        </div>
-
-        <div class="mb-3">
             <label for="isCompleted" class="form-label">Completed</label>
             <InputCheckbox id="isCompleted" class="form-check-input"
                        @bind-Value="newJpDailyListTask.IsCompleted" />
@@ -98,8 +98,21 @@ else
 
         <button type="submit" class="btn btn-primary">Add</button>
     </EditForm>
-    <input placeholder="Add a task" @bind="newTask" />
-    <button @onclick="AddTask">Add Task</button> 
+@* <input placeholder="Add a task" @bind="newTask" />
+    <button @onclick="AddTask">Add Task</button>  *@
+
+    @if(SuccessMessage is not null)
+    {
+        <br/>
+        <div class="alert alert-success">@SuccessMessage</div>
+    }
+
+    @if(ErrorMessage is not null)
+    {
+        <br/>
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+    
     
 }
 
@@ -118,6 +131,9 @@ else
     private int TotalPages { get; set; }
 
     private const int itemsPerPage = 3;
+
+    private string? SuccessMessage { get; set; }
+    private string? ErrorMessage { get; set; }
 
     protected override void OnInitialized()
     {
@@ -165,6 +181,33 @@ else
         }
     }
 
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            if (newJpDailyListTask is not null)
+            {
+                using var context = ContextFactory.CreateDbContext();
 
+                context.JPDailyListTask.Add(newJpDailyListTask);
+                await context.SaveChangesAsync();
+
+                SuccessMessage = $"Task {newJpDailyListTask.Title} was added successfully.";
+                ErrorMessage = null;
+
+                //New task
+                newJpDailyListTask = new()
+                    {
+                        //same task type as previous task
+                        Type = newJpDailyListTask.Type
+                    };
+            }
+        }catch(Exception ex)
+        {
+            SuccessMessage = null;
+            ErrorMessage = $"Error adding task: {ex.Message}";
+        }
+                
+    }
 }
 
