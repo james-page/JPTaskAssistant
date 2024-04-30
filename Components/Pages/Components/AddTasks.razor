@@ -1,0 +1,74 @@
+﻿
+
+<EditForm Model="@newJpDailyListTask" 
+          OnValidSubmit="@HandleValidSubmit"
+          OnInvalidSubmit="@HandleInvalidSubmit">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="title" class="form-label">Task Name</label>
+        <InputText id="title" class="form-control"
+                   @bind-Value="newJpDailyListTask.Title" />
+        @* <ValidationMessage For="()=>newJpDailyListTask.Title"/> *@
+    </div>
+
+    <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <InputText id="description" class="form-control"
+                   @bind-Value="newJpDailyListTask.Description" />
+        @* <ValidationMessage For="()=>newJpDailyListTask.Description" /> *@
+    </div>
+
+    <div class="mb-3">
+        <label for="taskType" class="form-label">Choose Task Type</label>
+        <InputSelect id="taskType" class="form-select"
+                     @bind-Value="newJpDailyListTask.Type">
+            @foreach (var jptt in Enum.GetValues<JPTaskType>())
+            {
+                <option value="@jptt">@jptt.ToDescription()</option>
+            }
+        </InputSelect>
+        @* <ValidationMessage For="()=>newJpDailyListTask.Title"/> *@
+    </div>
+
+    <div class="mb-3">
+        <label for="isCompleted" class="form-label">Completed</label>
+        <InputCheckbox id="isCompleted" class="form-check-input"
+                       @bind-Value="newJpDailyListTask.IsCompleted" />
+        @* <ValidationMessage For="()=>newJpDailyListTask.IsCompleted" /> *@
+    </div>
+
+    <button type="submit" class="btn btn-primary" disabled="@IsAdded">Add</button>
+</EditForm>
+@* <input placeholder="Add a task" @bind="newTask" />
+    <button @onclick="AddTask">Add Task</button>  *@
+
+@code {
+    [Parameter]
+    public JPDailyListTask? newJpDailyListTask { get; set; }
+    [Parameter]
+    //Property to track if the current item is already being added
+    public bool IsAdded { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnSubmit { get; set; }
+
+    private async Task HandleValidSubmit()
+    {
+        if (OnSubmit.HasDelegate)
+        {
+            await OnSubmit.InvokeAsync(true);
+        }
+    }
+
+    private async Task HandleInvalidSubmit()
+    {
+        if (OnSubmit.HasDelegate)
+        {
+            await OnSubmit.InvokeAsync(false);
+        }
+    }
+
+}

@@ -1,0 +1,153 @@
+﻿@page "/lists/{currentPage:int?}"
+@rendermode InteractiveServer
+
+
+@namespace JPTaskAssistant.Components.Pages.Components
+
+<PageTitle>Lists</PageTitle>
+
+<h1>Lists</h1>
+
+@* <div class="calendar">
+    <div class="month">January 2024</div>
+    <div class="days">
+        <div class="day">Sun</div>
+        <div class="day">Mon</div>
+        <div class="day">Tue</div>
+        <div class="day">Wed</div>
+        <div class="day">Thu</div>
+        <div class="day">Fri</div>
+        <div class="day">Sat</div>*@
+        @*Days will be dynamically generated using JavaScript*@
+    @*</div>
+    <div class="dates">*@
+        @*Dates will be dynamically generated using JavaScript*@
+    @*</div>
+</div> *@
+
+
+
+@if (@jptasks is null)
+{
+    <div>Loading ....</div>
+}
+else
+{
+    
+    
+    <AddTasks newJpDailyListTask="@newJpDailyListTask"
+        IsAdded="@IsAdded"
+        OnSubmit="@HandleSubmit"/>
+
+    @if(SuccessMessage is not null)
+    {
+        <br/>
+        <div class="alert alert-success">@SuccessMessage</div>
+    }
+
+    @if(ErrorMessage is not null)
+    {
+        <br/>
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+    
+    
+}
+
+
+
+@code {
+    private JPDailyListTask? newJpDailyListTask { get; set; }
+    //Property to track if the current item is already being added
+    private bool IsAdded { get; set; }
+
+    private List<JPTaskType>? taskTypes { get; set; }
+
+    
+
+    private string? newTask;
+    private List<Data.Models.JPDailyListTask> jptasks = new();
+
+    
+
+    
+
+    private string? SuccessMessage { get; set; }
+    private string? ErrorMessage { get; set; }
+
+    protected override void OnInitialized()
+    {
+        newJpDailyListTask = new();
+        newJpDailyListTask.EnteredBy = "James";
+    }
+
+    
+
+    private void AddTask()
+    {
+        if (!string.IsNullOrWhiteSpace(newTask))
+        {
+            jptasks.Add(new Data.Models.JPDailyListTask { Title = newTask });
+            newTask = string.Empty;
+            //Add to server
+        }
+    }
+
+    private async Task HandleSubmit(bool isValid)
+    {
+        if (isValid)
+        {
+            await HandleValidSubmit();
+        }
+        else
+        {
+            HandleInvalidSubmit();
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (IsAdded)
+        {
+            return;
+        }
+
+        IsAdded = true;
+
+        try
+        {
+            if (newJpDailyListTask is not null)
+            {
+                using var context = ContextFactory.CreateDbContext();
+
+                context.JPDailyListTask.Add(newJpDailyListTask);
+                await context.SaveChangesAsync();
+
+                SuccessMessage = $"Task {newJpDailyListTask.Title} was added successfully.";
+                ErrorMessage = null;
+
+                //New task
+                newJpDailyListTask = new()
+                    {
+                        //same task type as previous task
+                        Type = newJpDailyListTask.Type
+                    };
+            }
+        }catch(Exception ex)
+        {
+            SuccessMessage = null;
+            ErrorMessage = $"Error adding task: {ex.Message}";
+        }
+        finally
+        {
+            IsAdded = false;
+        }     
+    }
+
+    private void HandleInvalidSubmit()
+    {
+        SuccessMessage = null;
+        ErrorMessage = null;
+    }
+}
+

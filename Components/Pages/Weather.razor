@@ -34,15 +34,66 @@ else
             }
         </tbody>
     </table>
+    <p>@httpresponsetest</p>
 }
 
 @code {
     private WeatherForecast[]? forecasts;
+    private static Uri ilmweatheruri = new Uri( "https://api.weather.gov/points/34.2104,-77.8868");
+    private static HttpClient HttpClient = new()
+    {
+        BaseAddress = new Uri("https://api.weather.gov"),
+
+    };
+    private string httpresponsetest = "test";
+
+    static async Task GetAsync(HttpClient httpClient)
+    {
+        using HttpResponseMessage response = await httpClient.GetAsync("todos/3");
+
+        var jsonResponse = await response.Content.ReadAsStringAsync();
+        Console.WriteLine($"{jsonResponse}\n");
+
+        // Expected output:
+        //   GET https://jsonplaceholder.typicode.com/todos/3 HTTP/1.1
+        //   {
+        //     "userId": 1,
+        //     "id": 3,
+        //     "title": "fugiat veniam minus",
+        //     "completed": false
+        //   }
+    }
+
+    static async Task GetFromJsonAsync(HttpClient httpClient)
+    {
+        var todos = await httpClient.GetFromJsonAsync<List<string>>(
+            "todos?userId=1&completed=false");
+
+        Console.WriteLine("GET https://jsonplaceholder.typicode.com/todos?userId=1&completed=false HTTP/1.1");
+        todos?.ForEach(Console.WriteLine);
+        Console.WriteLine();
+
+        // Expected output:
+        //   GET https://jsonplaceholder.typicode.com/todos?userId=1&completed=false HTTP/1.1
+        //   Todo { UserId = 1, Id = 1, Title = delectus aut autem, Completed = False }
+        //   Todo { UserId = 1, Id = 2, Title = quis ut nam facilis et officia qui, Completed = False }
+        //   Todo { UserId = 1, Id = 3, Title = fugiat veniam minus, Completed = False }
+        //   Todo { UserId = 1, Id = 5, Title = laboriosam mollitia et enim quasi adipisci quia provident illum, Completed = False }
+        //   Todo { UserId = 1, Id = 6, Title = qui ullam ratione quibusdam voluptatem quia omnis, Completed = False }
+        //   Todo { UserId = 1, Id = 7, Title = illo expedita consequatur quia in, Completed = False }
+        //   Todo { UserId = 1, Id = 9, Title = molestiae perspiciatis ipsa, Completed = False }
+        //   Todo { UserId = 1, Id = 13, Title = et doloremque nulla, Completed = False }
+        //   Todo { UserId = 1, Id = 18, Title = dolorum est consequatur ea mollitia in culpa, Completed = False }
+    }
 
     protected override async Task OnInitializedAsync()
     {
         // Simulate asynchronous loading to demonstrate streaming rendering
         await Task.Delay(500);
+        
+        HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, ilmweatheruri);
+        
+        // Task<object> returnValue = System.Text.Json.JsonSerializer.DeserializeAsync();
 
         var startDate = DateOnly.FromDateTime(DateTime.Now);
         var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };

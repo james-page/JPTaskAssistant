@@ -6,6 +6,10 @@ namespace JPTaskAssistant.Data.Models
 {
     public class JPDailyListTask : ItemMeta
     {
+        public JPDailyListTask() { 
+            DateEntered = DateTime.Now;
+        }
+
         public Guid Id { get; set; }
 
         [Required]
